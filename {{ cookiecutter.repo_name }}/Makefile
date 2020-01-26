@@ -5,8 +5,10 @@
 #################################################################################
 
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+{%- if cookiecutter.s3_bucket -%}
 BUCKET = {{ cookiecutter.s3_bucket }}
 PROFILE = {{ cookiecutter.aws_profile }}
+{% endif %}
 PROJECT_NAME = {{ cookiecutter.repo_name }}
 PYTHON_INTERPRETER = {{ cookiecutter.python_interpreter }}
 
@@ -38,6 +40,7 @@ clean:
 lint:
 	flake8 src
 
+{%- if cookiecutter.s3_bucket -%}
 ## Upload Data to S3
 sync_data_to_s3:
 ifeq (default,$(PROFILE))
@@ -53,6 +56,7 @@ ifeq (default,$(PROFILE))
 else
 	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE)
 endif
+{% endif %}
 
 ## Set up python interpreter environment
 create_environment:
